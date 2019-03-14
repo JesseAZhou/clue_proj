@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block content%}
+{# 首页所有运营单位的总积分趋势总和 #}
+<br/>
+<br/>
+<br/>
+<div class="col-md-12">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <p class="panel-title">运营折线趋势图</p>
+    </div>
+    <div class="panel-body" style="width: 1100px;height:400px;" id="all_co_chart">
+      <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+      <script type="text/javascript">
+        require.config({
+          paths: {
+            echarts: 'http://echarts.baidu.com/build/dist'
+            }
+          });
+        require(
+          [
+            'echarts',
+            'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
+          ],
+          function (ec) {
+            // 基于准备好的dom，初始化echarts图表
+            var myChart = ec.init(document.getElementById('all_co_chart'));
+
+            var option = {
+              title: {
+                  text: '折线图堆叠'
+              },
+              tooltip: {
+                  trigger: 'axis'
+              },
+              legend: {
+                  data:['广州','上海','深圳','东莞']
+              },
+              grid: {
+                  left: '3%',
+                  right: '4%',
+                  bottom: '3%',
+                  containLabel: true
+              },
+              toolbox: {
+                  feature: {
+                      saveAsImage: {}
+                  }
+              },
+              xAxis: {
+                  type: 'category',
+                  boundaryGap: false,
+                  data: ['周一','周二','周三','周四','周五','周六','周日']
+              },
+              yAxis: {
+                  type: 'value'
+              },
+              series: [
+                  {
+                      name:'广州',
+                      type:'line',
+                      stack: '总量',
+                      data:[120, 132, 101, 134, 90, 230, 210]
+                  },
+                  {
+                      name:'东莞',
+                      type:'line',
+                      stack: '总量',
+                      data:[220, 182, 191, 234, 290, 330, 310]
+                  },
+                  {
+                      name:'深圳',
+                      type:'line',
+                      stack: '总量',
+                      data:[150, 232, 201, 154, 190, 330, 410]
+                  },
+                  {
+                      name:'上海',
+                      type:'line',
+                      stack: '总量',
+                      data:[320, 332, 301, 334, 390, 330, 320]
+                  }
+              ]
+          };
+            // 为echarts对象加载数据
+            myChart.setOption(option);
+          }
+        );
+      </script>
+    </div>
+  </div>
+</div>
+  <footer>
+    <p align="center">资源中心-访问人次：{{invite_men}}<br/></p>
+    <p align="center">联系我们：<a href="mailto:quasimodo.chow@gmail.com">quasimodo.chow@gmail.com</a></p>
+  </footer>
+{% comment %}
+ var option = {
+              noDataLoadingOption:{
+                text:"暂无数据",
+                effect:"bubble",
+                effectOption:{
+                  effect:{
+                    n:0
+                  }
+                }
+              },
+              tooltip: {
+                  trigger: 'axis'
+                },
+              legend: {
+                data: {{unit_list|safe}}
+                //data:["广州","深圳"]
+                },
+              grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+                },
+              toolbox: {
+                feature: {
+                  magicType: {show:true, type:['tiled']},
+                  saveAsImage: {}
+                  }
+                },
+              calculable:true,
+              xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: {{this_month|safe}}
+                //data:[2017-09-30,...2017-10-18...,2017-10-31]
+               },
+              yAxis: {
+                type: 'value'
+                },
+              series: [
+                {% for key,value in trade.items %}
+                  {
+                    name: '{{key|safe}}',
+                    type: 'line',
+                    //stack: '总量',
+                    data: {{value}}
+                    // key[运营单位],data[对应的积分]
+                  },
+                {% empty %}
+                    name:'',
+                    type:'line',
+                    data: 0
+                {% endfor %}
+              ]
+            };
+{% endcomment %}
+{% endblock content %}

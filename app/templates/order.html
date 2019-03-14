@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content%}
+<br>
+<br>
+  <div class="row">
+    <div class="cols-md-12">
+      <div class="panel panel-default">
+        <table class="table">
+          <th>销售区域</th><th>姓名</th><th>申领条数</th>
+            <form action="/order">
+              <tr class="bootstro" data-bootstro-title="线索申领" data-bootstro-content="地区与人名需填写准确，申领超出每日条数限制会有失败提示哦" data-bootstro-placement="bottom"><td><select id="sale_area" name="sale_area" style="width:200px;height:35px" class="selectpicker show-tick form-control" data-live-search="false">
+                <option value="广州">广州</option>
+                <option value="上海">上海</option>
+                <option value="深圳">深圳</option>
+                <option value="东莞">东莞</option>
+                <option value="佛山">佛山</option>
+                <option value="苏州">苏州</option>
+                </select></td><td><input type="text" name="sale_name" style="width:200px;height:35px"/>
+              </td><td><input type="number" name="order_num" style="width:200px;height:35px"/></td><td></td></tr>
+              <tr><td><a class="bootstro" data-bootstro-title="申领情况" data-bootstro-content="可查看最近一日内的申领总情况" data-bootstro-placement="bottom" href="/order_query">点此查看申领情况</a></td><td></td><td><input type="submit" value ="申领"></td></tr>
+            </form>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

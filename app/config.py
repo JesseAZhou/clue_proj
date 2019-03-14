@@ -2,7 +2,7 @@ from datetime import datetime
 import datetime as d_time
 
 # 各区数据缓存时间
-CACHE_TIL = 60*5
+CACHE_TIL = 10
 
 now_day = datetime.now().date()
 yesterday = now_day-d_time.timedelta(1)
@@ -25,6 +25,3 @@ weekday_headers = {
     'X-Requested-With': 'XMLHttpRequest'
 }
 
-# 据此区分申领时选择的区域，取固定区域的可用资源
-dim_city = {'上海': '51815', '佛山': '61390', '广州': '61391', '深圳': '61390',
-            '苏州': '82392', '东莞': '86665', '北京': '41351'}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<br>
+<br>
+<div class="row">
+  <div class="panel panel-default" style="width:500px;height:100px;">
+    <table class="table striped">
+      <th>销售区域</th><th>姓名</th><th></th>
+      <form action="/order_query">
+        <tr><td><select id="sale_area" name="sale_area" class="selectpicker show-tick form-control" data-live-search="false">
+          <option value="广州">广州</option>
+          <option value="上海">上海</option>
+          <option value="深圳">深圳</option>
+          <option value="东莞">东莞</option>
+          <option value="佛山">佛山</option>
+          <option value="苏州">苏州</option>
+        </select></td><td><input type="text" name="sale_name" style="height:35px"/>
+        </td><td><input type="submit" value ="查询" style="height:35px;width:90px"></td><td></td></tr>
+      </form>
+    </table>
+  </div>
+
+    <div class="panel panel-default" style="width:500px;">
+      <table class="table">
+        <th>销售人名</th><th>销售ID</th><th>申领时间</th><th>总申领(条)</th><th>成功申领(条)</th>
+        {% for value in result %}
+          <tr><td>{{sale_name}}</td><td>{{value.sale_id}}</td><td>{{value.create_time|date:'Y-m-d H:i'}}</td><td>{{value.all_length}}</td><td>{{value.length}}</td></tr>
+        {% empty %}
+        <tr></tr>
+        {% endfor %}
+      </table>
+    </div>
+
+</div>
+{% endblock content %}

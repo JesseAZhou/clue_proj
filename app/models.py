@@ -80,14 +80,14 @@ class AllManager(models.Manager):
     # 小部人数，月度总积分
     def get_sp_reach_all(self, unit_name, check_date):
         """小部积分明细之人数，月度总积分"""
-        query = self.get_queryset().filter(deadline_date=check_date, op_unit_name__contains=unit_name)\
+        query = self.get_queryset().filter(op_unit_name__contains=unit_name)\
             .values('xb', 'db', 'op_unit_name').annotate(man_num=Count('sale_name'),
                                                          this_month_score=Sum('this_month_score'))\
             .values('xb', 'db', 'op_unit_name', 'man_num', 'this_month_score')
         return query
 
     def get_sp_vaild(self, unit_name, xb, check_date):
-        query = self.get_queryset().filter(deadline_date=check_date, op_unit_name__contains=unit_name, xb=xb)\
+        query = self.get_queryset().filter(op_unit_name__contains=unit_name, xb=xb)\
             .values('xb').annotate(vaild_rank=Sum('his_all_score')-Sum('his_cost_score'))\
             .values('xb', 'deadline_date', 'vaild_rank')
         return query

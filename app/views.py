@@ -34,7 +34,7 @@ def now_person_goal(op_unit_name, now_goal_date):
             recent_goal_date = str(now_goal_date.year-1) + '-' + str(now_goal_date.month+11).zfill(2)+'-01'
         else:
             recent_goal_date = str(now_goal_date.year) + '-' + str(now_goal_date.month-1).zfill(2)+'-01'
-        person_goal = MonthGoal.objects.filter(op_unit_name__contains=op_unit_name, goal_date=recent_goal_date).first()
+        person_goal = MonthGoal.objects.filter(op_unit_name__contains=op_unit_name).first()
     return person_goal
 
 
@@ -89,7 +89,7 @@ def home_page(request):
 
 # 大部小部积分明细,大部趋势
 # @cache_page(60*60, cache='default',key_prefix='detail')
-@cache_page(CACHE_TIL)
+# @cache_page(CACHE_TIL)
 def detail_score(request):
     check_date = datetime.strptime(request.GET.get('check_date'), '%Y-%m-%d').date() \
         if request.GET.get('check_date') else yesterday
@@ -183,10 +183,10 @@ def detail_score(request):
     # remain_day:13,time_rate:21.8%}
     goal_dict = dp_goal_num(op_unit_name, check_date)
     man_goal = goal_dict['person_goal']  # 该运营单位的月人均目标
-
     sp_detail = Daily.orm_objects.get_sp_detail(op_unit_name, check_date)
     for sp in sp_detail:
-        real_man = Daily.objects.filter(op_unit_name__contains=op_unit_name, check_date=check_date, xb=sp['xb'])
+        # real_man = Daily.objects.filter(op_unit_name__contains=op_unit_name, check_date=check_date, xb=sp['xb'])
+        real_man = Daily.objects.filter(op_unit_name__contains=op_unit_name, xb=sp['xb'])
         sp['man'] = len(real_man) if real_man else 0
         back_sp_set = CheckCount.orm_objects.get_back_spart(op_unit_name, sp['xb'], check_date)
         sp['new_back_num'] = back_sp_set[0]
@@ -198,7 +198,7 @@ def detail_score(request):
     for summary in sp_man_real:
         man_num = summary['man_num']
         man_reach = All.objects.filter(op_unit_name__contains=op_unit_name, this_month_score__gte=man_goal,
-                                       xb=summary['xb'], deadline_date=check_date).all() if man_goal > 0 else {}
+                                       xb=summary['xb']).all() if man_goal > 0 else {}
         sp = dict()
         sp['dpart'] = summary['db']
         sp['spart'] = summary['xb']
@@ -215,7 +215,8 @@ def detail_score(request):
     ''' 大部积分明细 '''
     dp_detail = Daily.orm_objects.get_dp_detail(op_unit_name, check_date)
     for dp in dp_detail:
-        real_man = Daily.objects.filter(op_unit_name__contains=op_unit_name, check_date=check_date, db=dp['db'])
+        # real_man = Daily.objects.filter(op_unit_name__contains=op_unit_name, check_date=check_date, db=dp['db'])
+        real_man = Daily.objects.filter(op_unit_name__contains=op_unit_name, db=dp['db'])
         # dp['man'] = real_man[0]['man']
         dp['man'] = len(real_man) if real_man else 0
 
@@ -237,7 +238,6 @@ def detail_score(request):
         dp['month_score'] = summary['this_month_score']
         # dp['today_score'] = summary['today_score']
         dp_summary.append(dp)
-
     all_dp_goal = sum([goal['month_goal'] for goal in dp_summary])
     all_dp_score = sum([goal['month_score'] for goal in dp_summary])
     # today_score = sum([goal['today_score'] for goal in dp_summary])

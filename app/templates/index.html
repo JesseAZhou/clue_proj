@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2" id="myScrollspy">
+
+      <ul class="nav nav-tabs nav-stacked affix" data-spy="affix" data-offset-top="150">
+        <li class="active"><a href="#workday">工作日进度&趋势</a></li>
+        <li><a href="#DP">大部积分明细</a></li>
+        <li><a href="#SP">小部积分明细</a></li>
+        <li class="dropdown bootstro" data-bootstro-step="2" data-bootstro-title="个人明细" data-bootstro-content="下拉可分别查看积分排名、每日积分明细、每日驳回明细和当月驳回数量统计" data-bootstro-placement="bottom" > <a href="#" id= "personalMenu" class="dropdown-toggle" data-toggle="dropdown">个人积分明细<strong class="caret"></strong></a>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
+            <li> <a href="/person_rank?unit={{unit}}" tabindex="-1">当前积分排名</a> </li>
+            <li> <a href="/person_detail?unit={{unit}}" tabindex="-1">每日积分明细</a> </li>
+            <li> <a href="/reject_detail?unit={{unit}}" tabindex="-1">驳回明细</a> </li>
+            <li> <a href="/reject_count?unit={{unit}}" tabindex="-1">驳回统计</a> </li>
+          </ul>
+        </li>
+      </ul>
+
+  </div>
+
+  <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10" >
+  <br>
+  <br>
+  <br>
+    <div class="panel-heading">
+      <form action="/detail">
+        <strong>查询时间为质检日期</strong><br>
+        <strong>时间点选择：</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        截止时间：<input type="date" name="check_date" align='right' class="bootstro" data-bootstro-step="3" data-bootstro-title="质检时间" data-bootstro-content="输入往日时间可查看过去某日的大小部积分及相关内容，无日期默认为最近一个工作日" data-bootstro-placement="bottom"/>
+        <input type="hidden" id="unit" name="unit" value="{{unit}}" >
+        <input type="submit" value ="查询">
+      </form>
+    </div>
+    <div class="row clearfix" id="workday">
+      <div class = "col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        {# 工作日进度 + 今日积分#}
+        <div class="row clearfix">
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="panel panel-default bootstro" data-bootstro-step="4" data-bootstro-title="整体进度" data-bootstro-content="月均积分发布后正常显示到当日为止的时间进度和项目进度" data-bootstro-placement="left">
+              <div class="panel panel-heading">
+                <h3 class="panel-title"> 工作日完成进度 剩余{{remain_day}}日</h3>
+              </div>
+              <div class="panel-body">
+                <p>项目进度</p>
+                <div class="progress progress-striped active">
+                  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: {{proj_rate}}%;"></div>
+                  <span style="position:absolute;display:block;">{{proj_rate}}%</span>
+                </div>
+                <p>时间进度</p>
+                <div class="progress progress-striped active">
+                  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: {{time_rate}}%;position:relative;"></div>
+                  <span style="left:100;top:20;width:50;text-align:center;position:absolute;display:block">{{time_rate}}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="panel panel-default bootstro" data-bootstro-step="5" data-bootstro-title="公告区域" data-bootstro-content="发布各区策略当日的提醒要则" data-bootstro-placement="right">
+              <div class="panel panel-heading">
+                <h3 class="panel-title"> 公告栏  &nbsp;&nbsp;&nbsp;&nbsp;{{check_date|date:'Y-m-d'}}</h3>
+              </div>
+              <div class="panel-body">
+                <p>{{notice_day.note}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {#各大部驳回比#}
+        <div class="panel panel-default bootstro" data-bootstro-step="6" data-bootstro-title="质检统计&A类驳回" data-bootstro-content="目前新增线索、变更单发起量和不包括C类的A类驳回量及百分比显示" data-bootstro-placement="left">
+            <div class="panel-heading">
+              <p class="panel-title">质检统计 & A类驳回</p>
+            </div>
+            <table class="table table-striped">
+              <strong>
+                <th>大部</th><th>新增数量</th><th>新增驳回量</th><th>新增驳回率</th><th>变更单发起量</th><th>变更单驳回量</th><th>变更单驳回率</th>
+                {% for key,value in back_count.items %}
+                <tr><td>{{key}}</td><td>{{value.create_num|floatformat}}</td><td>{{value.create_back_num|floatformat}}</td><td>{{value.create_percent}}%</td><td>{{value.change_num}}</td><td>{{value.change_back_num|floatformat}}</td><td>{{value.change_percent}}%</td></tr>
+                {% empty %}
+                <tr><td colspan="7"> 暂无数据 </td></tr>
+                {% endfor %}
+              </strong>
+            </table>
+          </div>
+
+        {#各大部积分趋势#}
+        {% comment %}
+        <div class="panel panel-default bootstro" data-bootstro-step="7" data-bootstro-title="当月该区各大部总积分走势图" data-bootstro-content="鼠标移至折线折点可详看每日各部积分比较" data-bootstro-placement="left">
+            <div class="panel-heading">
+              <p class="panel-title">各大部当月每日积分趋势图</p>
+            </div>
+
+            <div style="width: 1100px;height:400px;" id="main">
+              <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+              <script type="text/javascript">
+                require.config({
+                paths: {
+                  echarts: 'http://echarts.baidu.com/build/dist/echarts.js'
+                  }
+                });
+                require(
+                  [
+                    'echarts',
+                    'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
+                  ],
+                  function (ec) {
+                    // 基于准备好的dom，初始化echarts图表
+                    var myChart = ec.init(document.getElementById('main'));
+                    var option = {
+                      noDataLoadingOption:{
+                        text:"暂无数据",
+                        effect:"bubble",
+                        effectOption:{
+                          effect:{
+                            n:0
+                          }
+                        }
+                      },
+                      tooltip: {
+                          trigger: 'axis'
+                        },
+                      legend: {
+                          //data:['广州','深圳','上海','东莞']
+                          data:{{db_trade_part|safe}}
+                        },
+                      grid: {
+                          left: 'left',
+                          right: 'right',
+                          top: 60,
+                          bottom: 60,
+                          width: 800,
+                          containLabel: true
+                        },
+                      toolbox: {
+
+                        show:true,
+                        feature:{
+
+                          }
+                        },
+                      calculable:true,
+                      xAxis: [
+                          {
+                          name: '日期',
+                          type: 'category',
+                          boundaryGap: false,
+                          data: {{this_month|safe}}
+                          }
+                        ],
+                      yAxis: [
+                          {
+                          name: '积分',
+                          type: 'value'
+                          }
+                        ],
+
+                      series: [
+                        {% for key,value in db_trade.items %}
+                          {
+                            name: "{{key}}",
+                            type:'line',
+                            //stack: '总量',
+                            data:{{value}}
+                          },
+                        {% endfor %}
+                      ]
+                    };
+                    // 为echarts对象加载数据
+                    myChart.setOption(option);
+                  }
+                );
+              </script>
+            </div>
+          </div>
+        {% endcomment %}
+        {#大部积分#}
+        <div class="col-sm-12 col-md-12 col-lg-12" id="DP"><hr></div>
+        <div class="panel panel-default bootstro" data-bootstro-step="8" data-bootstro-title="大部积分操作数量" data-bootstro-content="所选日期的月初至该日各大部各种积分操作的详情显示" data-bootstro-placement="top">
+          <div class="panel-heading">
+            <p class="panel-title">大部当月积分操作数量</p>
+          </div>
+          <table class="table table-striped">
+            <strong><th>大部</th><th>人数</th><th>新增线索</th><th>补充电话</th><th>批量增补</th><th>修正电话</th><th>其他</th><th>废弃电话</th><th>修改行业</th><th>线索贡献到款</th>
+            </strong>
+            {% for detail in dp_detailscore %}
+            <tr><td>{{detail.db}}</td><td>{{detail.man}}</td><td>{{detail.newadd_num|floatformat}}</td><td>{{detail.supple_ph_num|floatformat}}</td><td>{{detail.supple_num|floatformat}}</td><td>{{detail.chang_ph_num|floatformat}}</td><td>{{detail.chang_other_num|floatformat}}</td><td>{{detail.abandon_ph_num|floatformat}}</td><td>{{detail.chang_trade_num|floatformat}}</td><td>{{detail.pay_num|floatformat}}</td></tr>
+            {% empty %}
+            <tr><td colspan="10"> 暂无数据 </td></tr>
+            {% endfor %}
+
+            {% load add_value %}
+            {% if dp_detailscore %}
+            <tr><td>合计</td><td>{{dp_detailscore|add_value:'man'}}</td><td>{{dp_detailscore|add_value:'newadd_num'|floatformat}}</td><td>{{dp_detailscore|add_value:'supple_ph_num'|floatformat}}</td><td>{{dp_detailscore|add_value:'supple_num'|floatformat}}</td><td>{{dp_detailscore|add_value:'chang_ph_num'|floatformat}}</td><td>{{dp_detailscore|add_value:'chang_other_num'|floatformat}}</td><td>{{dp_detailscore|add_value:'abandon_ph_num'|floatformat}}</td><td>{{dp_detailscore|add_value:'chang_trade_num'|floatformat}}</td><td>{{dp_detailscore|add_value:'pay_num'|floatformat}}</td></tr>
+            {% endif %}
+          </table>
+          </div>
+        <div class="panel panel-default bootstro" data-bootstro-step="9" data-bootstro-title="大部积分进度" data-bootstro-content="月初至所选质检日期的各大部总积分，目标，完成率，达标率，可用积分情况" data-bootstro-placement="top">
+          <div class="panel-heading">
+            <p class="panel-title">大部当月积分完成进度</p>
+          </div>
+          <table class="table table-striped">
+            <strong><th>大部</th><th>人数</th><th>总积分</th><th>目标</th><th>完成率</th><th>达标率</th><th>可用积分</th>
+            </strong>
+            {% for sum_con in dp_summary %}
+            <tr><td>{{sum_con.dpart}}</td><td>{{sum_con.man}}</td><td>{{sum_con.month_score|floatformat}}</td><td>{{sum_con.month_goal|floatformat}}</td><td>{{sum_con.comp_rate}}%</td><td>{{sum_con.reach_rate}}%</td><td>{{sum_con.vaild|floatformat}}</td></tr>
+            {% empty %}
+            <tr><td colspan="7"> 暂无数据 </td></tr>
+            {% endfor %}
+            {% load add_value %}
+            {% if dp_summary %}
+            <tr><td>合计</td><td>{{dp_summary|add_value:'man'}}</td><td>{{dp_summary|add_value:'month_score'|floatformat}}</td><td>{{dp_summary|add_value:'month_goal'|floatformat}}</td><td>{{dp_summary|two_more:'month_score'|add_average:'month_goal'}}%</td><td>-</td><td>{{dp_summary|add_value:'vaild'|floatformat}}</td></tr>
+            {% endif %}
+          </table>
+        </div>
+
+        {# 小部积分 #}
+        <div class="col-sm-12 col-md-12 col-lg-12" id="SP"><hr></div>
+        <div class="panel panel-default bootstro" data-bootstro-step="10" data-bootstro-title="小部积分操作数量" data-bootstro-content="所选日期的月初至该日各小部各种积分操作的详情显示" data-bootstro-placement="top">
+          <div class="panel-heading">
+            <p class="panel-title">小部当月积分操作数量</p>
+          </div>
+          <table class="table table-striped">
+            <strong>
+              <th>小部</th><th>人数</th><th>新增线索</th><th>补充电话</th><th>批量增补</th><th>修正电话</th><th>其他</th><th>废弃电话</th><th>修改行业</th><th>线索贡献到款</th><th>新增驳回量</th><th>变更驳回量</th><th>增补驳回量</th>
+            </strong>
+            {% for detail in sp_detailscore %}
+              <tr><td>{{detail.xb}}</td><td>{{detail.man}}</td><td>{{detail.newadd_num|floatformat}}</td><td>{{detail.supple_ph_num|floatformat}}</td>
+                <td>{{detail.supple_num|floatformat}}</td><td>{{detail.chang_ph_num|floatformat}}</td><td>{{detail.chang_other_num|floatformat}}</td><td>{{detail.abandon_ph_num|floatformat}}</td>
+                <td>{{detail.chang_trade_num|floatformat}}</td><td>{{detail.pay_num|floatformat}}</td><td>{{detail.new_back_num|floatformat}}</td><td>{{detail.other_back_num|floatformat}}</td><td>{{detail.supp_back_num|floatformat}}</td></tr>
+            {% empty %}
+              <tr><td colspan="13"> 暂无数据 </td></tr>
+            {% endfor %}
+          </table>
+        </div>
+        <div class="panel panel-default bootstro" data-bootstro-step="11" data-bootstro-title="小部积分进度" data-bootstro-content="月初至所选质检日期的各小部总积分，目标，完成率，达标率，可用积分情况" data-bootstro-placement="top">
+            <div class="panel-heading">
+              <p class="panel-title">小部当月积分完成进度</p>
+            </div>
+            <table class="table table-striped">
+              <strong>
+              <th>大部</th><th>小部</th><th>人数</th><th>总积分</th><th>目标</th><th>完成率</th><th>达标率</th><th>可用积分</th>
+              </strong>
+              {% for sum_con in sp_summary %}
+                <tr><td>{{sum_con.dpart}}</td><td>{{sum_con.spart}}</td><td>{{sum_con.man_num}}</td><td>{{sum_con.month_score|floatformat}}</td><td>{{sum_con.month_goal|floatformat}}</td><td>{{sum_con.comp_rate}}%</td><td>{{sum_con.reach_rate}}%</td><td>{{sum_con.vaild|floatformat}}</td></tr>
+              {% empty %}
+                <tr><td colspan="8"> 暂无数据 </td></tr>
+              {% endfor %}
+            </table>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

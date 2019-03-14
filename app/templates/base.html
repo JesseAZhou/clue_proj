@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>线索生态</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="stylesheet" type="text/css" href="http://cdn.staticfile.org/twitter-bootstrap/3.0.1/css/bootstrap.min.css"/>
+  <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
+  <script type="text/javascript" src="http://cdn.staticfile.org/twitter-bootstrap/3.0.1/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="http://clu3.github.io/bootstro.js/bootstro.js"></script>
+  <link rel="stylesheet" type="text/css" href="http://clu3.github.io/bootstro.js/bootstro.css">
+  <style type="text/css">
+    body{font-family: 微软雅黑}
+    footer{
+      color: black;
+      clear: both;
+    }
+    .myScrollsoy{
+      position:absolute;left:0;top:0;
+      width:200px;
+      height:200px;
+      background:red;
+    }
+    .main{
+      position:absolute;left:0;top:0;
+      margin-left:210px;
+      background:blue;
+      height:200px;
+    }
+    ul.nav-tabs li{
+        margin: 0;
+        border-top: 1px solid #ddd;
+    }
+    ul.nav-tabs{
+        width: 160px;
+        margin-top: 60px;
+        margin-right: auto;
+        margin-left: -60px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.067);
+    }
+
+    ul.nav-tabs li:first-child{
+        border-top: none;
+    }
+
+    ul.nav-tabs li a{
+        margin: 0;
+        padding: 8px 16px;
+        border-radius: 0;
+    }
+    ul.nav-tabs li.active a, ul.nav-tabs li.active a:hover{
+        color: white;
+        background: black;
+        border: 1px solid #ddd;
+    }
+    ul.nav-tabs li:first-child a{
+        border-radius: 4px 4px 0 0;
+    }
+    ul.nav-tabs li:last-child a{
+        border-radius: 0 0 4px 4px;
+    }
+    ul.nav-tabs.affix{
+        top: 30px;
+    }
+    .div_right{float:right}
+    .bootstro-highlight
+    {
+        background-color:#FFDD55;
+    }
+
+  </style>
+  <script type="text/javascript">
+    $(function(){
+        $("#demo").click(function(){
+            bootstro.start(".bootstro", {
+                onComplete : function(params)
+                {
+                    alert("Reached end of introduction with total " + (params.idx + 1)+ " slides");
+                },
+                onExit : function(params)
+                {
+                    alert("Introduction stopped at slide #" + (params.idx + 1));
+                },
+            });
+        });
+        $(".demo_ajax").click(function(){
+            bootstro.start('', {
+                url : './static/bootstro.json',
+
+            });
+        });
+    });
+  </script>
+</head>
+
+<body data-spy="scroll" data-target="#myScrollspy">
+  <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="navbar navbar-inverse navbar-fixed-top">
+              <div class="navbar-inner">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+                <a class="navbar-brand bootstro" data-bootstro-step="0" data-bootstro-title="首页" data-bootstro-content="可查看各区当月的总积分趋势图" data-bootstro-placement="bottom" href="/">线索生态</a>
+              </div>
+              <div class="collapse navbar-collapse"  id="bs-example-navbar-collapse-1">
+                <form action="detail">
+                <ul class="nav navbar-nav nav-pills nav-stacked">
+                  <li><p> </p></li>
+                  <li><a href="../detail?unit=广州" class="bootstro" data-bootstro-step="1" data-bootstro-title="分区首页" data-bootstro-content="分区的详情内容及个人信息" data-bootstro-placement="bottom">广州</a></li>
+                  <li><a href="../detail?unit=上海" >上海</a></li>
+                  <li><a href="../detail?unit=深" >深圳</a></li>
+                  <li><a href="../detail?unit=东莞" >东莞</a></li>
+                  <li><a href="http://shenling.duapp.com/" target="_blank" class="bootstro" data-bootstro-step="12" data-bootstro-title="线索申领" data-bootstro-content="跳转至“资源中心线索申领平台”页面" data-bootstro-placement="bottom">线索申领</a></li>
+                  {% comment %}
+                  <li><a href="http://qiyechaxun.duapp.com/" target="_blank" class="bootstro" data-bootstro-step="13" data-bootstro-title="公司查询" data-bootstro-content="跳转至“直销公司搜索”页面" data-bootstro-placement="bottom">公司查询</a></li>
+                  <li><a href="../order">线索申领_zx</a></li>
+                  <li><a href="../detail?unit=佛山" >佛山</a></li>
+                  <li><a href="../detail?unit=苏州" >苏州</a></li>
+                  <li><a href="#" id="demo">新手引导</a></li>
+                  {% endcomment %}
+                </ul>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <br>
+          {% block content%}
+          {% endblock content%}
+          {% block sub_content%}
+          {% endblock sub_content%}
+      </div>
+  </div>
+  <br/>
+  <hr/>
+
+</body>
+</html>
